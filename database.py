@@ -56,5 +56,17 @@ def insert_device_status(pg_config, device_id, device_name, status_json):
         finally:
             return _id
 
+def get_device_status(pg_config, device_id, since):
+    sql = """SELECT * FROM device_status WHERE inserted_at >= %s AND device_id = %s ORDER BY inserted_at ASC;"""
+
+    try:
+        with  psycopg2.connect(**pg_config) as conn:
+            with  conn.cursor() as cur:
+                cur.execute(sql, (since, device_id, ))
+                return cur.fetchall()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
 if __name__ == '__main__':
     create_tables()
