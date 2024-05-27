@@ -19,10 +19,15 @@ def update_device_statuses(pg_config, shelly_devices):
         status = get_devices_status(device_id)
         dict = status.json()
         insert_device_status(pg_config, device_id, device_name, status.text)
-        aenergy = dict['data']['device_status']['switch:0']['aenergy']
-        total = aenergy['total']
-        ts = aenergy['minute_ts']
+        (total, ts) = energy_and_ts(dict)
         print(f"inserted {device_name}({device_id}) total_energy={total} at {ts}")
+
+def energy_and_ts(dict):
+    aenergy = dict['data']['device_status']['switch:0']['aenergy']
+    total = aenergy['total']
+    ts = aenergy['minute_ts']
+
+    return (total, ts)
 
 
 if __name__ == '__main__':
