@@ -1,16 +1,38 @@
-# This is a sample Python script.
+import time
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+import requests
+
+from config import load_config
+from database import insert_device_status
+
+def get_devices_status(device_id):
+    url = shelly_config['endpoint'] + '/device/status'
+    key = shelly_config['auth_key']
+    params = {'id': device_id, 'auth_key': key}
+
+    x = requests.post(url, params=params)
+    return x
+
+def update_device_statuses(pg_config, shelly_devices):
+    for device_name in shelly_devices:
+        device_id = shelly_devices[device_name]
+        status = get_devices_status(device_id)
+        dict = status.json()
+        insert_device_status(pg_config, device_id, device_name, status.text)
+        aenergy = dict['data']['device_status']['switch:0']['aenergy']
+        total = aenergy['total']
+        ts = aenergy['minute_ts']
+        print(f"inserted {device_name}({device_id}) total_energy={total} at {ts}")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    pg_config = load_config()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    shelly_config = load_config(filename="shelly_config.ini", section="config")
+    print(shelly_config)
+    shelly_devices = load_config(filename="shelly_config.ini", section="devices")
+    print(shelly_devices)
+
+    while True:
+        update_device_statuses(pg_config, shelly_devices)
+        time.sleep(30)
