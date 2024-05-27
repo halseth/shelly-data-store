@@ -9,7 +9,7 @@ def create_tables():
             id SERIAL PRIMARY KEY,
             device_id TEXT NOT NULL,
             device_name TEXT NOT NULL,
-            timestamp TIMESTAMP WITH TIME ZONE NOT NULL default CURRENT_TIMESTAMP,
+            inserted_at TIMESTAMP WITH TIME ZONE NOT NULL default CURRENT_TIMESTAMP,
             payload JSONB NOT NULL
         )
         """,
