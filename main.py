@@ -21,6 +21,7 @@ def update_device_statuses(pg_config, shelly_devices):
         (total, ts) = energy_and_ts(dict)
         print(f"inserting{device_name}({device_id}) total_energy={total} at {ts}")
         insert_device_status(pg_config, device_id, device_name, status.text)
+        time.sleep(2)
 
 def energy_and_ts(dict):
     aenergy = dict['data']['device_status']['switch:0']['aenergy']
@@ -40,4 +41,4 @@ if __name__ == '__main__':
 
     while True:
         update_device_statuses(pg_config, shelly_devices)
-        time.sleep(30)
+        time.sleep(10)
