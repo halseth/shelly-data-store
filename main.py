@@ -18,9 +18,9 @@ def update_device_statuses(pg_config, shelly_devices):
         device_id = shelly_devices[device_name]
         status = get_devices_status(device_id)
         dict = status.json()
-        insert_device_status(pg_config, device_id, device_name, status.text)
         (total, ts) = energy_and_ts(dict)
-        print(f"inserted {device_name}({device_id}) total_energy={total} at {ts}")
+        print(f"inserting{device_name}({device_id}) total_energy={total} at {ts}")
+        insert_device_status(pg_config, device_id, device_name, status.text)
 
 def energy_and_ts(dict):
     aenergy = dict['data']['device_status']['switch:0']['aenergy']
